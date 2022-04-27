@@ -1,33 +1,40 @@
-import { hashPassword } from "../../../helpers/auth";
-import connectToDatabase from "../../../helpers/db";
+import { hashPassword } from "../../../lib/auth";
+import { connectToDatabase } from "../../../lib/db";
 
-const handler = async (req, res) => {
+async function handler(req, res) {
+  if (req.method !== "POST") {
+    return;
+  }
+
   const data = req.body;
+
   const { email, password } = data;
 
   if (
     !email ||
     !email.includes("@") ||
     !password ||
-    password.trim().lengh < 7
+    password.trim().length < 7
   ) {
-    req.status(422).json({
+    res.status(422).json({
       message:
-        "Invalid input - password should be at leeast 7 characters long.",
+        "Invalid input - password should also be at least 7 characters long.",
     });
+    return;
   }
 
-  const hashedPassword = hashPassword(password);
-
   const client = await connectToDatabase();
+
   const db = client.db();
 
-  db.collection("users").insertOne({
+  const hashedPassword = await hashPassword(password);
+
+  const result = await db.collection("users").insertOne({
     email: email,
     password: hashedPassword,
   });
 
   res.status(201).json({ message: "Created user!" });
-};
+}
 
 export default handler;
