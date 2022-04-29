@@ -28,17 +28,27 @@ const handler = async (req, res) => {
     // connect to database
     try {
       client = await connectToDatabase();
-      // db = client.db(`${process.env.mongodb_database}`);
-      db = client.db("auth");
+      db = client.db(`${process.env.mongodb_database}`);
     } catch (error) {
       console.log("unable to connect to db");
     }
 
     // add item to database
     try {
+      const collectionName = "users";
+
       const hashedPassword = await hashPassword(password);
 
-      db.collection("users").insertOne({
+      const exisitingUserBool = await db
+        .collection(collectionName)
+        .findOne({ email: email });
+      if (exisitingUserBool) {
+        res.status(422).json({ message: "User already exists!" });
+        client.close();
+        return;
+      }
+
+      db.collection(collectionName).insertOne({
         email: email,
         password: hashedPassword,
         signUpDate: signUpDate,
@@ -48,8 +58,6 @@ const handler = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: "Not able to add to database." });
     }
-
-    // client.close();
   }
 };
 
