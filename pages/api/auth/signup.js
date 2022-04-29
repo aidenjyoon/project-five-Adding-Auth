@@ -4,7 +4,7 @@ import connectToDatabase from "../../../helpers/db";
 const handler = async (req, res) => {
   if (req.method === "POST") {
     const data = req.body;
-    const { email, password } = data;
+    const { email, password, signUpDate } = data;
 
     // check emails
     if (!email || !email.includes("@")) {
@@ -41,6 +41,7 @@ const handler = async (req, res) => {
       db.collection("users").insertOne({
         email: email,
         password: hashedPassword,
+        signUpDate: signUpDate,
       });
 
       res.status(201).json({ message: "Created user!" });

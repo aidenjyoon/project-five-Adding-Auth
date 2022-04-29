@@ -2,9 +2,11 @@ import { useState, useRef } from "react";
 import styles from "./AuthForm.module.scss";
 
 const createUser = async (email, password) => {
+  const signUpDate = new Date().toISOString();
+
   const response = await fetch("/api/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, signUpDate }),
     headers: {
       "Content-Type": "application/json",
     },
@@ -36,21 +38,21 @@ const AuthForm = () => {
     const enteredPassword = passwordInputRef.current.value;
 
     // TODO optional : add validation
-    // if (!enteredEmail || !enteredEmail.includes("@")) {
-    //   console.log("You have typed in an Invalid Email address");
-    //   throw new Error("please check your email");
-    // }
-    // if (!enteredPassword || enteredPassword.trim().length < 7) {
-    //   console.log("password too short");
-    //   throw new Error("please check your password");
-    // }
+    if (!enteredEmail || !enteredEmail.includes("@")) {
+      console.log("You have typed in an Invalid Email address");
+      throw new Error("please check your email");
+    }
+    if (!enteredPassword || enteredPassword.trim().length < 7) {
+      console.log("password too short");
+      throw new Error("please check your password");
+    }
 
-    // if (isLogin) {
-    //   // login useer
-    // } else {
-    //   // create new user
-    //   const result = await createUser(enteredEmail, enteredPassword);
-    // }
+    if (isLogin) {
+      // login useer
+    } else {
+      // create new user
+      const result = await createUser(enteredEmail, enteredPassword);
+    }
 
     if (isLogin) {
       // log user in
