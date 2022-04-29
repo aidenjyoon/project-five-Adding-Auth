@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
 import styles from "./AuthForm.module.scss";
 
-const createUser = async (email, password, currentTime) => {
+const createUser = async (email, password) => {
   const response = await fetch("/api/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password, currentTime }),
-    header: {
+    body: JSON.stringify({ email, password }),
+    headers: {
       "Content-Type": "application/json",
     },
   });
@@ -22,9 +22,8 @@ const createUser = async (email, password, currentTime) => {
 const AuthForm = () => {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
+
   const [isLogin, setIsLogin] = useState(true);
-  // const [enteredEmail, setEnteredEmail] = useState("");
-  // const [enteredPassword, setEnteredPassword] = useState("");
 
   function switchAuthModeHandler() {
     setIsLogin((prevState) => !prevState);
@@ -37,28 +36,31 @@ const AuthForm = () => {
     const enteredPassword = passwordInputRef.current.value;
 
     // TODO optional : add validation
-    if (!enteredEmail || !enteredEmail.includes("@")) {
-      console.log("You have typed in an Invalid Email address");
-      throw new Error("please check your email");
-    }
-    if (!enteredPassword || enteredPassword.trim().length < 7) {
-      console.log("password too short");
-      throw new Error("please check your password");
-    }
+    // if (!enteredEmail || !enteredEmail.includes("@")) {
+    //   console.log("You have typed in an Invalid Email address");
+    //   throw new Error("please check your email");
+    // }
+    // if (!enteredPassword || enteredPassword.trim().length < 7) {
+    //   console.log("password too short");
+    //   throw new Error("please check your password");
+    // }
 
-    var currentTime = new Date().toISOString();
-
-    console.log(emailInputRef.current.value);
+    // if (isLogin) {
+    //   // login useer
+    // } else {
+    //   // create new user
+    //   const result = await createUser(enteredEmail, enteredPassword);
+    // }
 
     if (isLogin) {
-      // login useer
+      // log user in
     } else {
-      // create new user
-      const result = await createUser(
-        enteredEmail,
-        enteredPassword,
-        currentTime
-      );
+      try {
+        const result = await createUser(enteredEmail, enteredPassword);
+        console.log(result);
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 
